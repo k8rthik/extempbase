@@ -41,8 +41,10 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b py-1">
                 <div className="w-full max-w-5xl flex justify-between items-center px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Home</Link>
+                    <Link href={"/"}>Dashboard</Link>
                     <Link href={"/outlines"}>Outlines</Link>
+                    <Link href={"/research"}>Research</Link>
+                    <Link href={"/rhetoric"}>Rhetoric</Link>
                   </div>
                   <HeaderAuth />
                 </div>
