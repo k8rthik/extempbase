@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Parse AI response and format as an outline
 function parseOutline(responseText: string) {
   const lines = responseText.split("\n").filter((line) => line.trim() !== "");
 
