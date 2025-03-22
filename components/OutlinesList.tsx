@@ -1,7 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Plus, X, Calendar, ChevronRight } from "lucide-react";
+import {
+  Search,
+  Plus,
+  X,
+  Calendar,
+  ChevronRight,
+  Clock,
+  Tag,
+  Download,
+} from "lucide-react";
 import ShimmerButton from "@/components/ShimmerButton";
 
 interface Outline {
@@ -35,6 +44,28 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
     }
   };
 
+  const formatTimeAgo = (dateString: string) => {
+    try {
+      const now = new Date();
+      const date = new Date(dateString);
+      const diffInHours = Math.floor(
+        (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+      );
+
+      if (diffInHours < 1) {
+        return "Just now";
+      } else if (diffInHours === 1) {
+        return "1 hour ago";
+      } else if (diffInHours < 24) {
+        return `${diffInHours} hours ago`;
+      } else {
+        return formatDate(dateString);
+      }
+    } catch {
+      return "Unknown time";
+    }
+  };
+
   const truncateText = (text: string | undefined, maxLength: number) => {
     if (!text) return "";
     return text.length > maxLength
@@ -48,9 +79,7 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex flex-col space-y-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h1 className="text-2xl font-semibold text-black dark:text-white">
-                Outlines
-              </h1>
+              <h1 className="text-2xl font-semibold">Outlines</h1>
 
               <Link href="/outlines/new">
                 <ShimmerButton icon={<Plus className="w-4 h-4" />}>
@@ -69,21 +98,21 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
                   placeholder="Search outlines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-md bg-white dark:bg-black border border-gray-200 dark:border-gray-800 text-black dark:text-white placeholder-gray-400 focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white"
+                  className="w-full pl-10 pr-4 py-3 rounded-md bg-background border text-foreground placeholder-gray-400 focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white"
                 />
               </div>
             </div>
           </div>
 
           {filteredOutlines.length === 0 ? (
-            <div className="text-center py-16 border rounded-md border-dashed border-gray-200 dark:border-gray-800">
+            <div className="text-center py-16 border rounded-md border-dashed">
               <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center mb-4">
                 <Search className="h-6 w-6 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-black dark:text-white mb-1">
+              <h3 className="text-lg font-medium mb-1">
                 {searchQuery ? "No matching outlines" : "No outlines found"}
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchQuery
                   ? "Try a different search term"
                   : "Create your first outline to get started"}
@@ -98,35 +127,39 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
               )}
             </div>
           ) : (
-            <div className="border rounded-md overflow-hidden bg-white dark:bg-black border-gray-200 dark:border-gray-800">
-              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
+              <div className="divide-y divide-border">
                 {filteredOutlines.map((outline) => (
-                  <li
-                    key={outline.id}
-                    onClick={() => setSelectedOutline(outline)}
-                    className="cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-                  >
-                    <div className="flex items-center justify-between px-4 py-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start">
-                          <h3 className="text-base font-medium text-black dark:text-white truncate">
-                            {outline.title || "Untitled Outline"}
-                          </h3>
-                        </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1">
-                          {truncateText(outline.content?.thesis, 120) ||
-                            "No thesis added yet"}
-                        </p>
-                        <div className="flex items-center mt-2 text-xs text-gray-400 dark:text-gray-500">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          <span>{formatDate(outline.created_at)}</span>
+                  <div key={outline.id} className="py-4 first:pt-0 last:pb-0">
+                    <div
+                      onClick={() => setSelectedOutline(outline)}
+                      className="flex items-center justify-between group cursor-pointer"
+                    >
+                      <div>
+                        <h3 className="text-sm font-medium group-hover:text-primary transition-colors">
+                          {outline.title || "Untitled Outline"}
+                        </h3>
+                        <div className="mt-1 flex items-center space-x-4 text-sm text-muted-foreground">
+                          <span className="flex items-center">
+                            <Clock className="mr-1.5 h-3.5 w-3.5" />
+                            {formatTimeAgo(outline.created_at)}
+                          </span>
+                          <span className="flex items-center">
+                            <Tag className="mr-1.5 h-3.5 w-3.5" />
+                            {outline.content?.points?.length
+                              ? `${outline.content.points.length} points`
+                              : "No points"}
+                          </span>
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+                      <button className="inline-flex h-8 items-center justify-center rounded-md px-3 bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                        <Download className="mr-1.5 h-3.5 w-3.5" />
+                        Export
+                      </button>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </div>
@@ -134,10 +167,10 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
 
       {selectedOutline && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-black rounded-md w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-800">
+          <div className="bg-card rounded-md w-full max-w-2xl max-h-[90vh] overflow-y-auto border shadow-sm">
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
-                <h2 className="text-xl font-semibold text-black dark:text-white">
+                <h2 className="text-xl font-semibold">
                   {selectedOutline.title || "Untitled Outline"}
                 </h2>
                 <button
@@ -150,16 +183,16 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
                     Thesis Statement
                   </h3>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-md p-3 text-black dark:text-white">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-md p-3">
                     {selectedOutline.content?.thesis || "No thesis provided"}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
                     Key Points
                   </h3>
                   {selectedOutline.content?.points?.length ? (
@@ -167,20 +200,20 @@ export default function OutlinesList({ outlines }: { outlines: Outline[] }) {
                       {selectedOutline.content.points.map((point, index) => (
                         <li
                           key={index}
-                          className="bg-gray-50 dark:bg-gray-900 rounded-md p-3 text-black dark:text-white"
+                          className="bg-gray-50 dark:bg-gray-900 rounded-md p-3"
                         >
                           {point}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-900 rounded-md p-3 text-gray-500 dark:text-gray-400">
+                    <div className="bg-gray-50 dark:bg-gray-900 rounded-md p-3 text-muted-foreground">
                       No points added yet
                     </div>
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex items-center text-xs text-gray-400 dark:text-gray-500">
+                <div className="pt-4 border-t flex items-center text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3 mr-1" />
                   <span>Created {formatDate(selectedOutline.created_at)}</span>
                 </div>
