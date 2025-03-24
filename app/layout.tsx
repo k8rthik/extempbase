@@ -66,7 +66,7 @@ export default async function RootLayout({
               <div className="w-full p-5 bg-white dark:bg-black">
                 {children}
               </div>
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-1">
                 <p>
                   Powered by{" "}
                   <a
