@@ -63,19 +63,25 @@ export async function POST(req: Request) {
 
     // Parse the incoming request body
     const { question } = await req.json();
-    if (!question) {
-      return NextResponse.json(
-        { error: "Question is required" },
-        { status: 400 },
-      );
-    }
+    const prompt = `
+    I need a well-structured outline for the following question: "${question}"
+      Format the response as a JSON object with:
+      {
+        "thesis": "Your thesis statement here",
+        "points": ["Main point 1", "Main point 2", "Main point 3"],
+      }
+
+      
+
+      Only return valid JSON.
+  `;
 
     // Initialize Gemini API
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Generate AI content
-    const result = await model.generateContent(question);
+    const result = await model.generateContent(prompt);
 
     // Handle potential errors in API response
     if (!result || !result.response) {
