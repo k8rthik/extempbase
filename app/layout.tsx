@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "extemp_",
+  title: "xdrive",
   description: "digitizing speech & debate",
   generator: "extempbase.io",
 };
