@@ -1,23 +1,15 @@
-import { createClient } from "@/utils/supabase/server";
-import Dashboard from "@/components/dashboard"; // Assuming the Dashboard component is in the components directory
-import { redirect } from "next/navigation";
+import { Rocketship } from "@/components/rocketship"
+import { StarField } from "@/components/star-field"
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Redirect to login if not authenticated
-  if (!user) {
-    return redirect("/login");
-  }
-
+export default function Home() {
   return (
-    <>
-      <main className="flex-1 flex flex-col gap-6 max-w-7xl mx-auto w-full">
-        <Dashboard />
-      </main>
-    </>
-  );
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-black text-white overflow-hidden">
+      <StarField />
+      <div className="text-center space-y-8 z-10">
+        <Rocketship />
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter animate-fade-in">coming soon.</h1>
+      </div>
+    </main>
+  )
 }
+
